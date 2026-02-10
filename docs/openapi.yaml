@@ -1,0 +1,83 @@
+openapi: 3.0.3
+
+info:
+  title: yastakshif API
+  description: >
+    Spatial API providing GeoJSON access to tourist attractions
+    in the Old City. Data sourced from OpenStreetMap.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development
+components:
+  schemas:
+    PointGeometry:
+      type: object
+      required: [type, coordinates]
+      properties:
+        type:
+          type: string
+          enum: [Point]
+        coordinates:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: number
+          description: "[longitude, latitude] in EPSG:4326"
+
+    AttractionProperties:
+      type: object
+      required: [id, name, category]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        opening_hours:
+          type: string
+
+    AttractionFeature:
+      type: object
+      required: [type, geometry, properties]
+      properties:
+        type:
+          type: string
+          enum: [Feature]
+        geometry:
+          $ref: "#/components/schemas/PointGeometry"
+        properties:
+          $ref: "#/components/schemas/AttractionProperties"
+
+    AttractionFeatureCollection:
+      type: object
+      required: [type, features]
+      properties:
+        type:
+          type: string
+          enum: [FeatureCollection]
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttractionFeature"
+paths:
+  /attractions:
+    get:
+      summary: List all tourist attractions
+      description: >
+        Returns a GeoJSON FeatureCollection of tourist attractions
+        in the Old City.
+      tags: [Attractions]
+      responses:
+        "200":
+          description: GeoJSON FeatureCollection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttractionFeatureCollection"
+
