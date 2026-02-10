@@ -4,4 +4,4 @@ export type AttractionProperties = {
   category: string;
   description?: string;
   opening_hours?: string;
-};
+}; 
